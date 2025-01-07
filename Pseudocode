@@ -1,0 +1,150 @@
+DEKLARASI VARIABEL GLOBAL:
+    Array noCustomer <- array kosong untuk menyimpan nomor customer
+    Array namaCustomer <- array kosong untuk menyimpan nama customer
+    Array kodePerawatan <- array kosong untuk menyimpan kode perawatan
+    Array getHarga <- array kosong untuk menyimpan harga perawatan
+    Array totalHarga <- array kosong untuk menyimpan total harga
+    Array jumlahDiscount <- array kosong untuk menyimpan jumlah diskon
+    Boolean jalan <- true
+
+ALGORITMA UTAMA:
+    WHILE jalan = true
+        Tampilkan Menu()
+    ENDWHILE
+
+PROSEDUR Tampilkan Menu():
+    OUTPUT: "====== MENU ======"
+    OUTPUT: "1. Lihat Data Customer"
+    OUTPUT: "2. Tambah Data Customer"
+    OUTPUT: "3. Edit Data Customer"
+    OUTPUT: "4. Hapus Data Customer"
+    OUTPUT: "5. Keluar"
+    INPUT: pilihMenu
+    
+    SWITCH pilihMenu:
+        CASE 1: Tampilkan Semua Customer()
+        CASE 2: Input Customer()
+        CASE 3: Edit Customer()
+        CASE 4: Hapus Customer()
+        CASE 5: 
+            jalan <- false
+            OUTPUT: "Program dihentikan. Terima kasih!"
+        DEFAULT: OUTPUT: "Menu tidak valid!"
+    ENDSWITCH
+
+PROSEDUR Tampilkan Semua Customer():
+    hal <- 1
+    perHal <- 3
+    totalHal <- ceiling(panjang(noCustomer) / perHal)
+    
+    WHILE true
+        OUTPUT: header laporan
+        
+        IF noCustomer kosong THEN
+            OUTPUT: "Data Customer Tidak tersedia!"
+            RETURN
+        ENDIF
+        
+        subBayar <- 0
+        Tampilkan header tabel
+        
+        start <- (hal - 1) * perHal
+        end <- minimum(start + perHal, panjang(noCustomer))
+        
+        FOR i <- start HINGGA end
+            totalBayar <- getHarga[i] - jumlahDiscount[i]
+            subBayar <- subBayar + totalBayar
+            Tampilkan data customer ke-i dalam format tabel
+        ENDFOR
+        
+        Tampilkan total keseluruhan
+        
+        Tampilkan opsi navigasi halaman
+        INPUT: pilihan
+        
+        IF pilihan = 'n' DAN hal < totalHal THEN
+            hal <- hal + 1
+        ELSE IF pilihan = 'b' DAN hal > 1 THEN
+            hal <- hal - 1
+        ELSE IF pilihan = 'k' THEN
+            BREAK
+        ELSE
+            OUTPUT: "Input tidak valid"
+        ENDIF
+    ENDWHILE
+
+PROSEDUR Input Customer():
+    berjalan <- true
+    
+    WHILE berjalan
+        INPUT: nomor customer
+        INPUT: nama customer
+        Tampilkan daftar perawatan dan harga
+        INPUT: kode perawatan
+        
+        harga <- Dapatkan Harga(kode)
+        
+        IF harga >= 1500000 THEN
+            discount <- harga * 15%
+        ELSE IF harga >= 700000 THEN
+            discount <- harga * 5%
+        ELSE
+            discount <- 0
+        ENDIF
+        
+        Tambahkan data ke array-array terkait
+        
+        OUTPUT: "Data berhasil ditambahkan"
+        INPUT: "Isi data lagi? (y/t)"
+        
+        IF input = 't' THEN
+            berjalan <- false
+        ENDIF
+    ENDWHILE
+
+PROSEDUR Edit Customer():
+    Tampilkan Semua Customer()
+    INPUT: index customer yang akan diedit
+    
+    IF index valid THEN
+        INPUT: nomor customer baru
+        INPUT: nama customer baru
+        Tampilkan daftar perawatan
+        INPUT: kode perawatan baru
+        
+        Update data di array-array terkait
+        Hitung ulang harga dan diskon
+    ELSE
+        OUTPUT: "Data tidak ada dalam database!"
+    ENDIF
+
+PROSEDUR Hapus Customer():
+    Tampilkan Semua Customer()
+    INPUT: index customer yang akan dihapus
+    
+    IF index valid THEN
+        Hapus data dari semua array terkait
+        OUTPUT: "Data berhasil dihapus!"
+    ELSE
+        OUTPUT: "Data tidak ada dalam database!"
+    ENDIF
+
+FUNGSI Dapatkan Harga(kode):
+    SWITCH kode:
+        CASE 1: RETURN 250000
+        CASE 2: RETURN 500000
+        CASE 3: RETURN 500000
+        CASE 4: RETURN 1000000
+        CASE 5: RETURN 2500000
+        DEFAULT: RETURN 0
+    ENDSWITCH
+
+FUNGSI Dapatkan Perawatan(kode):
+    SWITCH kode:
+        CASE 1: RETURN "Facial"
+        CASE 2: RETURN "Laser Fraksional"
+        CASE 3: RETURN "Chemical Peel" 
+        CASE 4: RETURN "Suntik Filler"
+        CASE 5: RETURN "Mesotherapy"
+        DEFAULT: RETURN "pilihan tidak tersedia"
+    ENDSWITCH
