@@ -1,0 +1,248 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package projekakhir0024;
+import java.io.*;
+import java.util.*;
+/**
+ *
+ * @author HP
+ */
+public class ProjekAkhir0024 {
+    static ArrayList<String> noCustomer = new ArrayList<>();
+    static ArrayList<String> namaCustomer = new ArrayList<>();
+    static ArrayList<Integer> kodePerawatan = new ArrayList<>();
+    static ArrayList<Integer> getHarga = new ArrayList<>();
+    static ArrayList<Integer> totalHarga = new ArrayList<>();
+    static ArrayList<Double> jumlahDiscount = new ArrayList<>();
+    static boolean jalan = true;
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    
+    public static void main(String[] args) throws IOException {
+        while (jalan) {
+            showMenu();
+        }
+    }
+    
+    static void showMenu() throws IOException {
+        System.out.println("\n======== MENU ========");
+        System.out.println("1. Lihat Data Customer");
+        System.out.println("2. Tambah Data Customer");
+        System.out.println("3. Edit Data Customer");
+        System.out.println("4. Hapus Data Customer");
+        System.out.println("5. Keluar");
+        System.out.print("Pilih menu: ");
+        int pilihMenu = Integer.parseInt(br.readLine());
+        
+        switch (pilihMenu) {
+            case 1:
+                showAllCustomer();break;
+            case 2:
+                inputCustomer();break;
+            case 3:
+                editCustomer();break;
+            case 4:
+                deleteCustomer();break;
+            case 5:
+                jalan = false;
+                System.out.println("Program dihentikan. Terima kasih!");
+                break;
+            default:
+                System.out.println("Menu tidak valid!");
+        }
+    }
+    
+    static void showAllCustomer() {
+        Scanner scanner = new Scanner(System.in);
+        int hal = 1;
+        int perHal = 3;
+        int totalHal = (int) Math.ceil((double) noCustomer.size() / perHal);
+        
+        while (true) {
+            System.out.println("\n"
+                         + "============================================== LAPORAN KLINIK KECANTIKAN LIVI ==============================================\n");
+            System.out.println("    DATA CUSTOMER                                                                                                                                                                       Hal "+hal+"\n");
+            
+            if (noCustomer.isEmpty()) {
+                System.out.println("Data Customer Tidak tersedia!");
+            return;}
+            else {
+            double subBayar = 0;
+            
+            System.out.printf("+-----+-----------------+---------------------+--------------------+-----------------+---------------+--------------------+\n"); 
+            System.out.printf("| No  |  Nomor Customer |    Nama Customer    |      Layanan       |    Harga(Rp)    |    Diskon     |     Total Bayar    |\n");
+            System.out.printf("|-----|-----------------|---------------------|--------------------|-----------------|---------------|--------------------|\n");
+
+            int start = (hal - 1) * perHal;
+            int end = Math.min(start + perHal, noCustomer.size());
+            
+            for (int i = start; i < end; i++) {
+                double totalBayar = getHarga.get(i) - jumlahDiscount.get(i);
+                
+                subBayar += totalBayar;
+
+                System.out.printf("|%-5d|%-17s|%-21s|%-20s|%-17d|%-15.0f|%-20.0f|\n",
+                    i + 1,
+                    noCustomer.get(i),
+                    namaCustomer.get(i),
+                    getPerawatan(kodePerawatan.get(i)),
+                    getHarga.get(i),
+                    jumlahDiscount.get(i),
+                    totalBayar
+                );
+                 }
+
+            System.out.printf("|-------------------------------------------------------------------------------------------------------------------------|\n");
+
+            System.out.printf("|            Total Keseluruhan                |                                                      |%-20.0f|\n",
+                subBayar
+            );
+
+            System.out.printf("+-------------------------------------------------------------------------------------------------------------------------+\n");
+        }
+
+        if (hal < totalHal) {
+            System.out.print("\nTekan 'n' untuk halaman berikutnya atau 'k' untuk keluar: ");
+        } else if (hal > 1) {
+            System.out.print("\nTekan 'b' untuk halaman sebelumnya atau 'k' untuk keluar: ");
+        } else {
+            System.out.print("\nTekan 'n' untuk halaman berikutnya atau 'k' untuk keluar: ");
+        }
+
+        String input = scanner.nextLine();
+
+        if (input.equalsIgnoreCase("n") && hal < totalHal) {
+            hal++;
+        } else if (input.equalsIgnoreCase("b") && hal > 1) {
+            hal--;
+        } else if (input.equalsIgnoreCase("k")) {
+            break;
+        } else {
+            System.out.println("Input tidak valid. Silakan coba lagi.");
+        }
+    }
+}
+    static void inputCustomer() throws IOException {
+        boolean berjalan = true;
+        while (berjalan) {
+            System.out.println("\n======== TAMBAH DATA ========");
+            
+            System.out.print("Nomor Customer    : ");
+            String nomor = br.readLine();
+            System.out.print("Nama Customer     : ");
+            String nama = br.readLine();
+        
+            System.out.print("List Pesanan \n"
+                    + "1. Facial             : Rp. 250.000\n"
+                    + "2. Laser Fraksional   : Rp. 500.000\n"
+                    + "3. Chemical Peel      : Rp. 500.000\n"
+                    + "4. Suntik Filler      : Rp. 1.000.000\n"
+                    + "5. Mesotherapy        : Rp. 2.500.000\n");
+            System.out.print("Masukkan Kode Pemesanan       : ");
+            int kode = Integer.parseInt(br.readLine());
+            int harga = getHarga(kode);
+            
+            double discount = 0;
+            if (harga >= 1500000){
+                discount = harga * 15 / 100;}
+            else if (harga >= 700000){
+                discount = harga * 5 / 100;}
+            
+            kodePerawatan.add(kode);
+            getHarga.add(harga);
+            jumlahDiscount.add(discount);
+            noCustomer.add(nomor);
+            namaCustomer.add(nama);
+            System.out.println("Data berhasil ditambahkan ke database!");
+            System.out.print("Isi Data lagi? (y/t): ");
+            if(br.readLine().equalsIgnoreCase("t")) {
+                berjalan = false;}
+        }
+    }
+    
+    static void editCustomer() throws IOException {
+        System.out.println("\n======== EDIT DATA ========");
+        showAllCustomer();
+        System.out.print("Pilih nomor pelanggan yang ingin di-edit: ");
+        int index = Integer.parseInt(br.readLine()) - 1;
+        
+        if (index >= 0 && index < noCustomer.size()) {
+            System.out.print("Nomor Customer baru : ");
+            noCustomer.set(index, br.readLine());
+            System.out.print("Nama Customer baru  : ");
+            namaCustomer.set(index, br.readLine());
+            System.out.print("List Pesanan \n"
+                    + "1. Facial             : Rp. 250.000\n"
+                    + "2. Laser Fraksional   : Rp. 500.000\n"
+                    + "3. Chemical Peel      : Rp. 500.000\n"
+                    + "4. Suntik Filler      : Rp. 1.000.000\n"
+                    + "5. Mesotherapy        : Rp. 2.500.000\n");
+            System.out.print("Masukkan Kode Baru : ");
+            int kode = Integer.parseInt(br.readLine());
+            kodePerawatan.set(index, kode);
+            getHarga.set(index, getHarga(kode));
+            
+            int harga = getHarga.get(index);
+            double discount = 0;
+            if (harga >= 1500000){
+                discount = harga * 15 / 100;}
+            else if (harga >= 700000){
+                discount = harga * 5 / 100;}
+            jumlahDiscount.set(index, discount);
+        } else {
+            System.out.println("Data tidak ada dalam database!");
+        }
+    }
+    static void deleteCustomer() throws IOException {
+        System.out.println("\n======== HAPUS DATA ========");
+        showAllCustomer();
+        System.out.print("Pilih nomor pelanggan yang ingin dihapus : ");
+        int index = Integer.parseInt(br.readLine()) - 1;
+        
+        if (index >= 0 && index < noCustomer.size()) {
+            noCustomer.remove(index);
+            namaCustomer.remove(index);
+            kodePerawatan.remove(index);
+            getHarga.remove(index);
+            jumlahDiscount.remove(index);
+            
+            System.out.println("Data berhasil dihapus!");
+        } else {
+            System.out.println("Data tidak ada dalam database!");
+        }
+    }
+    static int getHarga(int kode) {
+        switch (kode) {
+            case 1:
+                return 250000;
+            case 2:
+                return 500000;
+            case 3:
+                return 500000;
+            case 4:
+                return 1000000;
+            case 5:
+                return 2500000;
+            default:
+                return 0;
+        }
+    }
+    static String getPerawatan(int kode) {
+        switch (kode) {
+        case 1:
+                return "Facial";
+            case 2:
+                return "Laser Fraksional";
+            case 3:
+                return "Chemical Peel";
+            case 4:
+                return "Suntik Filler";
+            case 5:
+                return "Mesotherapy";
+            default:
+                return "pilihan tidak tersedia";
+        }
+    }
+}
